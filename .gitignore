@@ -2,3 +2,4 @@ __pycache__/*
 chromedriver
 token.txt
 example_page.html
+out.log
