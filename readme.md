@@ -8,23 +8,23 @@ Only I can invite it currently
 Run **.help** to show list of commands. You can also ping the bot, ie **@jackbot**
 
 ## Running the bot
-To run the bot:
+To run the bot
 ```
 python3 jackbot.py
 ```
 
-To run it in the background:
+To run it in the background and keep it running while logged out
 ```
-python3 jackbot.py &
+nohup python3 jackbot.py > out.log &
 ```
 
-To check currently running jobs:
+To check currently running jobs
 ```
 jobs
 ps -aux | grep jackbot
 ```
 
-To kill the job:
+To kill the job
 ```
 kill <PID>
 kill -KILL <PID>
