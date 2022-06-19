@@ -8,6 +8,9 @@ Only I can invite it currently
 Run **.help** to show list of commands. You can also ping the bot, ie **@jackbot**
 
 ## Running the bot
+* In **lost_crawler.py**, set **CHROME_PATH** to correct path.
+* Create a file called **token.txt** that contains your discord bot token
+
 To run the bot
 ```
 python3 jackbot.py
