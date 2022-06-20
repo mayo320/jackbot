@@ -68,16 +68,25 @@ class MyBot:
             if ch:
                 yield ch
 
-    async def _pingChannel(self, merchant, ch):
+    async def _getRoleByName(self, ch, name):
         roles = await ch.guild.fetch_roles()
         for role in roles:
-            if role.name.lower() == merchant.card.lower():
-                msg = "{} is selling <@&{}> in {} - ".format(merchant.name, role.id, merchant.region)
-                msg += "[{}]({})!!".format(merchant.zone, URL + merchant.zone_img)
+            if role.name.lower() == name.lower():
+                return role
+        return None
+        
+    async def _pingChannel(self, merchant, ch, force=False):
+        role_name = merchant.card
+        role = await self._getRoleByName(ch, merchant.card)
+        if role:
+            role_name = "<@&{}>".format(role.id)
 
-                embed = discord.Embed()
-                embed.description = msg
-                await ch.send(embed=embed)
+        if force or role:
+            msg = "{} is selling {} in {} - ".format(merchant.name, role_name, merchant.region)
+            msg += "[{}]({})".format(merchant.zone, URL + merchant.zone_img)
+            embed = discord.Embed()
+            embed.description = msg
+            await ch.send(embed=embed)
         
     async def _pingAllChannels(self, merchant):
         for ch in self._iterateChannels():
@@ -91,7 +100,6 @@ class MyBot:
         if "Active Merchants" not in html:
             if self.found_cards:
                 self.found_cards.clear()
-                await self._broadcast("Merchants are gone")
             return
         
         for merchant in iterateMerchants(html):
@@ -102,10 +110,6 @@ class MyBot:
             if card not in self.found_cards:
                 await self._pingAllChannels(merchant)
                 self.found_cards[card] = merchant
-
-    async def _rePing(self, ch):
-        for card, merc in self.found_cards.items():
-                await self._pingChannel(merc, ch)
 
     async def _messageHandler(self, message):
         if message.author == self.client.user:
@@ -120,7 +124,6 @@ class MyBot:
         elif content.startswith(".start"):
             self.channels.add(message.channel.id)
             await message.channel.send("Running on \"{}\"".format(message.channel.name))
-            await self._rePing(message.channel)
 
         elif content.startswith(".stop"):
             if message.channel.id in self.channels:
@@ -129,7 +132,8 @@ class MyBot:
 
         elif content.startswith(".status"):
             if self.found_cards:
-                await self._rePing(message.channel)
+                for card, merc in self.found_cards.items():
+                    await self._pingChannel(merc, message.channel, force=True)
             else:
                 await message.channel.send("Waiting for merchants to spawn..")
 

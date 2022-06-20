@@ -3,3 +3,4 @@ chromedriver
 token.txt
 example_page.html
 out.log
+nohup.out
