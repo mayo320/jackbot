@@ -18,7 +18,7 @@ python3 jackbot.py
 
 To run it in the background and keep it running while logged out
 ```
-nohup python3 jackbot.py > out.log &
+nohup python3 -u jackbot.py &
 ```
 
 To check currently running jobs
