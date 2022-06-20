@@ -30,7 +30,7 @@ ps -aux | grep jackbot
 To kill the job
 ```
 kill <PID>
-kill -KILL <PID>
+pkill chorme
 ```
 
 Reference: https://kb.iu.edu/d/afnz
