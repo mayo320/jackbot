@@ -38,7 +38,8 @@ class Channel:
                 embed = discord.Embed(color=0xf1c40f)
                 embed.description = self._generateMsg(merchant, "<@&{}>".format(roleshash[merchant.card].id))
                 # embed.set_image(url=URL + merchant.zone_img)
-                await self.ch.send(embed=embed)
+                # await self.ch.send(embed=embed)
+                await self.ch.send(embed.description)
                 self.pinged_merchants.add(merchant.card)
 
     def clearMerchants(self):
@@ -129,6 +130,9 @@ class MyBot:
                     for m in self.merchants:
                         self.history[-1].append(m.card)
                     self.merchants = []
+
+                    if len(self.history) > 20:
+                    	self.history.pop(0)
         
                 for cid, ch in self.channels.items():
                     ch.clearMerchants()
