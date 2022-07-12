@@ -46,6 +46,7 @@ class Channel:
 
     async def showStatus(self, merchants):
         self._heartbeat()
+        self._getRoles()
         msgs = []
         for merchant in merchants:
             msgs.append(self._generateMsg(merchant, embedLink=True))
@@ -69,7 +70,10 @@ class Channel:
         return roleshash
     
     def _generateMsg(self, merchant, embedLink=False):
-        msg = f"{merchant.name} is selling <@&{self.roleshash[merchant.card].id}> in {merchant.region} - "
+        card = merchant.card
+        if (card in self.roleshash):
+            card = f"<@&{self.roleshash[merchant.card].id}>"
+        msg = f"{merchant.name} is selling {card} in {merchant.region} - "
         if embedLink:
             msg += f'[{merchant.zone}]({URL + merchant.zone_img})'
         else:
