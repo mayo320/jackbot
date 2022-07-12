@@ -47,7 +47,7 @@ class Channel:
         self._heartbeat()
         msgs = []
         for merchant in merchants:
-            msgs.append(self._generateMsg(merchant))
+            msgs.append(self._generateMsg(merchant, embedLink=True))
         if not merchants:
             msgs.append("Waiting for merchants to spawn...")
 
@@ -66,8 +66,13 @@ class Channel:
             roleshash[role.name] = role
         return roleshash
     
-    def _generateMsg(self, merchant):
-        return f"{merchant.name} is selling <@&{roleshash[merchant.card].id}> in {merchant.region} - {merchant.zone}"
+    def _generateMsg(self, merchant, embedLink=False):
+        msg = f"{merchant.name} is selling <@&{roleshash[merchant.card].id}> in {merchant.region} - "
+        if embedLink:
+            msg += f'[{merchant.zone}]({URL + merchant.zone_img})'
+        else:
+            msg += merchant.zone
+        return msg
 
 
 class MyBot:
