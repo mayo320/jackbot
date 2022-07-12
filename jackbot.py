@@ -24,6 +24,7 @@ class Channel:
     def __init__(self, channel):
         self.ch = channel
         self.pinged_merchants = set()
+        self.roleshash = {}
 
     async def pingMerchants(self, merchants):
         self._heartbeat()
@@ -64,10 +65,11 @@ class Channel:
         roles = await self.ch.guild.fetch_roles()
         for role in roles:
             roleshash[role.name] = role
+        self.roleshash = roleshash
         return roleshash
     
     def _generateMsg(self, merchant, embedLink=False):
-        msg = f"{merchant.name} is selling <@&{roleshash[merchant.card].id}> in {merchant.region} - "
+        msg = f"{merchant.name} is selling <@&{self.roleshash[merchant.card].id}> in {merchant.region} - "
         if embedLink:
             msg += f'[{merchant.zone}]({URL + merchant.zone_img})'
         else:
