@@ -36,10 +36,8 @@ class Channel:
             # Ping only if guild has this role
             if merchant.card in roleshash and merchant.card not in self.pinged_merchants:
                 embed = discord.Embed(color=0xf1c40f)
-                embed.description = self._generateMsg(merchant, "<@&{}>".format(roleshash[merchant.card].id))
-                # embed.set_image(url=URL + merchant.zone_img)
-                # await self.ch.send(embed=embed)
-                await self.ch.send(embed.description)
+                embed.set_image(url=URL + merchant.zone_img)
+                await self.ch.send(self._generateMsg(merchant), embed=embed)
                 self.pinged_merchants.add(merchant.card)
 
     def clearMerchants(self):
@@ -49,7 +47,7 @@ class Channel:
         self._heartbeat()
         msgs = []
         for merchant in merchants:
-            msgs.append(self._generateMsg(merchant, merchant.card))
+            msgs.append(self._generateMsg(merchant))
         if not merchants:
             msgs.append("Waiting for merchants to spawn...")
 
@@ -68,10 +66,8 @@ class Channel:
             roleshash[role.name] = role
         return roleshash
     
-    def _generateMsg(self, merchant, role_name):
-        msg = "{} is selling {} in {} - ".format(merchant.name, role_name, merchant.region)
-        msg += "[{}]({})".format(merchant.zone, URL + merchant.zone_img)
-        return msg
+    def _generateMsg(self, merchant):
+        return f"{merchant.name} is selling <@&{roleshash[merchant.card].id}> in {merchant.region} - {merchant.zone}"
 
 
 class MyBot:
