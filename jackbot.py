@@ -24,6 +24,7 @@ class Channel:
     def __init__(self, channel):
         self.ch = channel
         self.pinged_merchants = set()
+        self.roleshash = {}
 
     async def pingMerchants(self, merchants):
         self._heartbeat()
@@ -36,10 +37,8 @@ class Channel:
             # Ping only if guild has this role
             if merchant.card in roleshash and merchant.card not in self.pinged_merchants:
                 embed = discord.Embed(color=0xf1c40f)
-                embed.description = self._generateMsg(merchant, "<@&{}>".format(roleshash[merchant.card].id))
-                # embed.set_image(url=URL + merchant.zone_img)
-                # await self.ch.send(embed=embed)
-                await self.ch.send(embed.description)
+                embed.set_image(url=URL + merchant.zone_img)
+                await self.ch.send(self._generateMsg(merchant), embed=embed)
                 self.pinged_merchants.add(merchant.card)
 
     def clearMerchants(self):
@@ -47,9 +46,10 @@ class Channel:
 
     async def showStatus(self, merchants):
         self._heartbeat()
+        self._getRoles()
         msgs = []
         for merchant in merchants:
-            msgs.append(self._generateMsg(merchant, merchant.card))
+            msgs.append(self._generateMsg(merchant, embedLink=True))
         if not merchants:
             msgs.append("Waiting for merchants to spawn...")
 
@@ -66,11 +66,18 @@ class Channel:
         roles = await self.ch.guild.fetch_roles()
         for role in roles:
             roleshash[role.name] = role
+        self.roleshash = roleshash
         return roleshash
     
-    def _generateMsg(self, merchant, role_name):
-        msg = "{} is selling {} in {} - ".format(merchant.name, role_name, merchant.region)
-        msg += "[{}]({})".format(merchant.zone, URL + merchant.zone_img)
+    def _generateMsg(self, merchant, embedLink=False):
+        card = merchant.card
+        if (card in self.roleshash):
+            card = f"<@&{self.roleshash[merchant.card].id}>"
+        msg = f"{merchant.name} is selling {card} in {merchant.region} - "
+        if embedLink:
+            msg += f'[{merchant.zone}]({URL + merchant.zone_img})'
+        else:
+            msg += merchant.zone
         return msg
 
 
